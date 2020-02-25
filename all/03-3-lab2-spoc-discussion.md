@@ -11,7 +11,7 @@ NOTICE
 ## 提前准备
 
 * 完成lec7\(lab2\)的视频学习和提交对应的在线练习
-* git pull ucore\_os\_lab, v9\_cpu, os\_course\_spoc\_exercises 　in github repos。这样可以在本机上完成课堂练习。
+* git pull ucore\_os\_lab, v9\-cpu, os\_course\_spoc\_exercises 　in github repos。这样可以在本机上完成课堂练习。
 * 理解如何实现建立页表（主要自学和网上查找）
 
 ## 第七讲视频相关思考题
