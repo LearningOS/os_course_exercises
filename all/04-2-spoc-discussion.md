@@ -68,3 +68,48 @@
 	 - [LIRS journal paper](http://www.ece.eng.wayne.edu/~sjiang/pubs/papers/jiang05_LIRS.pdf)
 	 - [LIRS-replacement ppt1](http://dragonstar.ict.ac.cn/course_09/XD_Zhang/(6)-LIRS-replacement.pdf)
 	 - [LIRS-replacement ppt2](http://www.ece.eng.wayne.edu/~sjiang/Projects/LIRS/sig02.ppt)
+
+
+
+## 问答题
+
+#### Q1：[基础] 全局和局部置换算法有何不同？分别有哪些算法？
+
+A:
+
+#### Q2：[基础] 简单描述OPT、FIFO、LRU、Clock、LFU的工作过程和特点
+
+A:
+
+#### Q3：[进阶，开放，推荐]考虑置换算法的收益和开销，综合评判在何种情境下使用何种算法比较合适呢？
+
+A:
+
+#### Q4：[基础] Clock和LFU算法存在那些问题，如何改进？
+
+A:
+
+#### Q5：[进阶-，开放] Clock算法仅仅能够记录近期是否访问过这一信息，对于访问的频度几乎没有记录，如何改进这一点？（这里针对恢复计数的LFU算法也可以提出类似问题.）
+
+A:
+
+#### Q6：[基础] LRU算法的缺页率是否总是优于FIFO算法呢？为何？
+
+A:
+
+#### Q7：[基础] 描述belady现象。[进阶] 哪些算法有belady现象？[困难]思考belady现象的成因，尝试给出说明OPT和LRU等没有belady现象的思路（仅仅是思路，大体有一个方向即可）。
+
+A:
+
+#### Q8：[进阶] 使用自映射有何优势？有何代价？
+
+A:
+
+#### Q9：[基础] 为何要使用自映射？除了自映射还可以使用什么方法？
+
+A:
+
+#### Q10：[进阶] 考虑在 32 位 x86 下使用页表自映射。为了方便用三元组 (a, b, c) 表示虚拟/物理地址 ((a<<22)  +(b<<12) + c)，其中 0<=a,b<1024，0<=c<4096。假设页目录的物理地址是 (A, B, 0)，并且页目录的第 e 项  (0<=e<1024) 是自映射项，就是说在 (A, B, 4*e) 页目录项指向页目录自己的物理地址 (A, B, 0).
+
+A:
+
