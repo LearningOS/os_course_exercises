@@ -214,4 +214,4 @@ SIGNAL CONDITION x (x.signal):
 可能的参考：
 
  1. [2015年操作系统课的信号量问题回答](https://piazza.com/class/i5j09fnsl7k5x0?cid=391)：梁锡豪同学的测试用例和输出信息显示方式具有很好的可读性。供可参考。
- 1. 第三类读者写者问题的C语言实现：[The third readers-writers problem](https://rfc1149.net/blog/2011/01/07/the-third-readers-writers-problem/)
+ 1. 第三类读者写者问题的C语言参考实现：[The third readers-writers problem](https://rfc1149.net/blog/2011/01/07/the-third-readers-writers-problem/)
