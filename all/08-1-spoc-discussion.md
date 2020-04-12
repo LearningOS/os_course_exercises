@@ -119,3 +119,11 @@
 1. （spoc） 每人用python实现[银行家算法](https://github.com/chyyuu/ucore_lab/blob/master/related_info/lab7/deadlock/bankers-homework.py)。大致输出可参考[参考输出](https://github.com/chyyuu/ucore_lab/blob/master/related_info/lab7/deadlock/example-output.txt)。除了`YOUR CODE`部分需要填写代码外，在算法的具体实现上，效率也不高，可进一步改进执行效率。
 2. (spoc) 以小组为单位，请思考在lab1~lab5的基础上，是否能够实现IPC机制，请写出如何实现信号，管道或共享内存（三选一）的设计方案。
 3. (spoc) 扩展：用C语言实现某daemon程序，可检测某网络服务失效或崩溃，并用信号量机制通知重启网络服务。[信号机制的例子](https://github.com/chyyuu/ucore_lab/blob/master/related_info/lab7/ipc/signal-ex1.c)
+
+## 课后练习
+
+在Window、MacOS或Linux操作系统中利用管道和共享内存实现两进程间间循环传输一个4字节整数数组的数据传输例子，并测试其性能特征。
+要求如下：
+1）在两个进程间循环传输一个4字节无符号整数数组，两个进程都对收到的数组中的每个元素进行加1，然后再发给对方；
+2）统计每个进程收发100000次（一收一发算一次）的总时间；
+3）分别测试数组长度为5个、50个和500个元素时的特征。
