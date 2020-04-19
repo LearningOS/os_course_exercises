@@ -194,9 +194,10 @@
 ## 小组思考题
  1. (spoc)完成Simple File System的功能，支持应用程序的一般文件操作。具体帮助和要求信息请看[sfs-homework](https://github.com/chyyuu/ucore_lab/blob/master/related_info/lab8/sfs-homework.md)
 
+## 课后练习
 
- 2. (spoc)FAT、UFS、YAFFS、NTFS这几种文件系统中选一种，分析它的文件卷结构、目录结构、文件分配方式，以及它的变种。
-  wikipedia上的文件系统列表参考
+(spoc)通过搜索引擎找一种你感兴趣的有开源实现的文件系统，分析它的文件卷结构、目录结构、文件分配方式。
+  wikipedia上的文件系统列表参考。
   - http://en.wikipedia.org/wiki/List_of_file_systems
   - http://en.wikipedia.org/wiki/File_system
   - http://en.wikipedia.org/wiki/List_of_file_systems
