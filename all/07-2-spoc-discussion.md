@@ -70,7 +70,7 @@ s.count--;              //有可用资源，占用该资源；
 4. 为什么互斥信号量的实现比资源信号量的实现要简单？请说明．
 
  > 信号量中的整形变量的取值不同，互斥信号量的最大取值为1；而资源信号量的最大取值为资源总数；
- 
+
 ### 18.3 管程
 
 1. 管程的组成包括哪几部分？入口队列和条件变量等待队列的作用是什么？
@@ -100,9 +100,9 @@ s.count--;              //有可用资源，占用该资源；
  > 在Hansen和Mesa管程中，由于条件变量释放操作signal时并没有立即放弃管程访问权，资源的可用状态可能变化，需使用while()进行重新检查；
 
  > 在Hoare管程中，由于条件变量释放操作signal同时表示立即放弃管程访问权，资源的可用状态保持不变，可使用if判断，不需要再次检查。
- 
+
  > Ref: https://piazza.com/class/i5j09fnsl7k5x0?cid=894
- 
+
  > Ref: https://www.andrew.cmu.edu/course/15-440-kesden/applications/ln/lecture6.html
 
 ### 18.4 哲学家就餐问题
@@ -110,7 +110,7 @@ s.count--;              //有可用资源，占用该资源；
 1. 哲学家就餐问题的方案2和方案3的性能有什么区别？
 
  > 方案2对应为只有一个哲学家在吃饭；
- 
+
  > 方案3可以有两个哲学家在吃饭
 
 ### 18.5 读者-写者问题
@@ -194,9 +194,9 @@ SIGNAL CONDITION x (x.signal):
 1. （spoc） 每人使用C++或python语言用信号量和条件变量两种手段分别实现[40个同步互斥问题](07-2-spoc-pv-problems.md)中的一题。请先理解[python threading 机制的介绍和实例](https://github.com/chyyuu/ucore_lab/tree/master/related_info/lab7/semaphore_condition)
 
  > 参考：[2015年操作系统课的信号量问题回答](https://piazza.com/class/i5j09fnsl7k5x0?cid=391)
- 
+
  > 建议参考梁锡豪同学的输出信息显示方式，这种方式的可读性很好。
- 
+
  > 建议重视测试用例的设计，以检查自己的实现是否有错。
 
 2. (spoc)设计某个方法，能够动态检查出对于两个或多个进程的同步互斥问题执行中，没有互斥问题，能够同步等，以说明实现的正确性。
@@ -215,3 +215,66 @@ SIGNAL CONDITION x (x.signal):
 
  1. [2015年操作系统课的信号量问题回答](https://piazza.com/class/i5j09fnsl7k5x0?cid=391)：梁锡豪同学的测试用例和输出信息显示方式具有很好的可读性。供可参考。
  1. 第三类读者写者问题的C语言参考实现：[The third readers-writers problem](https://rfc1149.net/blog/2011/01/07/the-third-readers-writers-problem/)
+
+## 问答题
+
+#### Q1：[基础] 信号量内部整数：当它分别为+n、0、-n 的时候，各自代表什么状态？
+
+A:
+
+#### Q2：[基础] 考虑课堂上展示的信号量实现代码
+
+```c++
+class Semaphore {
+  int sem;
+  WaitQueue q;
+}
+Semaphore::P() {
+  sem --;
+  if(sem < 0) {
+    Add this thread to q.
+    block.
+  }
+}
+Semaphore::V() {
+  sem ++;
+  if(sem <= 0) {
+    t = Remove a thread from q;
+    wakeup(t);
+  }
+}
+```
+
+1. 假如 P/V 不是原子操作，会出现什么问题？举一个例子说明。
+2. 上述代码运行在内核态还是用户态？其原子性是如何保证的？
+
+#### Q3：[基础] 条件变量的 Wait 操作为什么必须关联一个锁？考虑课堂上展示的条件变量实现代码，如果进行修改，会出现什么问题？举一个例子说明。
+
+```c++
+// before
+Condvar::wait(lock) {
+  Add this thread to q.
+  lock.unlock();
+  schedule();
+  lock.lock();
+}
+
+// after
+Condvar::wait() {
+  Add this thread to q.
+  schedule();
+}
+lock.unlock();
+condvar.wait();
+lock.lock();
+```
+
+A:
+
+#### Q4：[扩展] 实际编程中的管程我们平时常用的编程语言中，都存在条件变量，但都没听说过管程。难道管程没有用吗？请对这一现象发表你的看法。
+
+A:
+
+#### Q5：[小班讨论] 如何给一个同步问题的实现代码写测例？
+
+A:
