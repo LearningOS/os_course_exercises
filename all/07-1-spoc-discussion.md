@@ -502,3 +502,111 @@ int FetchAndAdd(int *ptr) {
   return old;
 }
 ```
+## 问答题
+
+#### Q1：考虑以下情况分别属于并行还是并发：单核处理器分时执行进程；多核处理器同时执行进程；一个学期学完 5 门课；边听 OS 课边吃早饭。“高并发服务”和“并行计算”能否混用？
+
+A:
+并发：能够处理多个任务，允许【交替】执行
+并行：能够【同时】执行多个任务
+
+单核处理器分时执行进程：并发
+多核处理器同时执行进程：并行
+一个学期学完 5 门课：并发
+边听 OS 课边吃早饭：并行
+
+高并发服务：指可以同时处理大量请求，但处理器数量肯定<<请求数，因此是交替执行
+并行计算：多台处理器同时计算以减少总时间。并发计算其实没有意义。
+
+参考资料：https://www.zhihu.com/question/33515481
+
+#### Q2：[基础] 为了创造临界区，单核处理器上可以【关中断】，多核处理器上需要使用【自旋锁】。那么……
+
+1. 多核上可不可以只用【关中断】？
+
+   > 不可以，需要用共享变量让其它核知道状态信息。
+
+2. 单核上可不可以只用【自旋锁】？
+
+   > 通常来说，对于单核系统来说自旋锁是没有意义的。例如单核 Linux 认为自旋锁是 noop。不过硬要使用的话，应该关中断。否则中断后再访问会死锁/造成无谓的等待。
+
+3. 多核上的【自旋锁】是否需要同时【关中断】？
+
+   > 需要，同上。（拓展：实际系统如 Linux，其中的 spin_lock 只关了内核抢占，没有关中断。只有 spin_lock_irqsave 才会关中断。为什么呢？）
+
+4. [进阶] 假如某个锁不会在中断处理函数中被访问，是否还需要【关中断】？
+
+   > 不需要，只需要关闭内核抢占（见前面的讨论）。Linux 就是这么做的。
+
+下面是一张图，描述了在持有 spinlock 时被中断打断，可能的后果
+
+![](figures/spinlock_intr.png)
+
+#### Q3：[扩展] 用户程序使用的锁（例如 pthread_mutex_t）不是自旋锁，当上锁失败时会切换到其它进程执行。分析它和自旋锁的优劣，并说明为什么用户程序不用自旋锁？
+
+A:自旋锁在上锁失败后会占用 CPU 反复尝试。在高度竞争的环境下，会导致 CPU 资源大量浪费。用户程序用的锁在切换进程时也会有一些开销，但比起浪费在死等其它人的时间微不足道。为了结合二者的优点，真实世界的锁会首先 spin 几轮，拿不到之后再切换到其它进程。
+
+#### Q4：[基础] 程序在运行时具有两种性质：
+
+#### safety: something bad will never happen
+
+#### liveness: something good will eventually occur
+
+#### 总结起来就是：坏事永远不会发生，好事最终总会发生。请结合临界区解释这句话的含义。
+
+A:
+
+safety：永远不会有两个进程同时在临界区中 -> 更精确的：同一时间，对某个临界区，至多有一个进程在其中。
+
+liveness：弱一点的：多个进程试图进入同一个临界区时，经过有限时间后，至少一个进程能够进入该临界区。强一点的：一个进程在某时刻尝试进入某临界区，总能经过有限时间在未来某个时刻，此进程进入该临界区。
+
+#### Q5：[进阶] 分析并证明 Peterson 算法的 safety 和 liveness 性质。
+
+A:
+
+手动证明比较容易，如果需要形式化说明 safety 可以参考如下资源。
+
+(liveness 需要额外假设，比如调度是 “公平” 的，否则无法证明 liveness)： 
+
+Safety 证明：Coq 的 http://jamesrwilcox.com/SharedMem.html 
+
+Safety 可以使用模型检测工具，例如 SPIN 来证明：https://github.com/nimble-code/Spin/blob/master/Examples/peterson.pml 
+
+还可以使用 TLA+ 证明：http://tla.msr-inria.inria.fr/tlaps/doc/IFM2010/Peterson_IFM2010.pdf
+
+#### Q6： [扩展] 假如扩展到 3 个进程，如何修改 Peterson 算法？
+
+A:
+
+拓展内容。可[参考](https://en.wikipedia.org/wiki/Peterson%27s_algorithm#Filter_algorithm:_Peterson's_algorithm_for_more_than_two_processes)。
+
+#### Q7：[进阶] 真实世界自旋锁
+
+#### 容易理解一个事实：CPU 处理原子指令的时间 > 普通内存读写，且处理原子写操作的时间 > 原子读操作。具体地说：atomic_load 的开销小于 test_and_set。并且，当多核同时争抢一个锁时，原子读写指令的冲突会导致很大开销。基于以上事实，尝试改进课程中提到的自旋锁的性能：
+
+```c
+class Lock {
+  bool value = false;
+}
+Lock::Acquire() {
+  // better performance?
+  while(test_and_set(value));
+}
+Lock::Release() {
+  value = false;
+}
+```
+
+A:注意到当锁已经被占用时（value=true），是永远不可能抢到的。因此可以改成：如果 test_and_set 失败了，就只去读，直到锁被释放后再尝试写。减少原子写操作的频率。代码如下：
+
+```c
+Lock::Acquire() {
+  while(test_and_set(value)) {
+    while(atomic_load(value)) {
+      spin_loop_hint();  // 有些 CPU 支持自旋锁的 hint 指令，如 x86 的 pause
+      // 更进一步，还可以指数退避
+    }
+  }
+}
+```
+
