@@ -113,7 +113,7 @@
  > 参考测试用例：在内存中开指定大小数组，生成随机数据写入数组（最后两个字节为16位的校验和），然后创建指定类型的通信信道并发送和接收数据，收到数据后要利用校验和检测数据正确性；数据收发过程重复指定的次数，并计时；最后通过分析计时数据得到通信带宽、通信延时、带宽抖动和延时抖动等性能数据。
 
  > [管道的例子](https://github.com/chyyuu/ucore_lab/blob/master/related_info/lab7/ipc/pipe-ex2.c)
- 
+
 ## 小组思考题
 
 1. （spoc） 每人用python实现[银行家算法](https://github.com/chyyuu/ucore_lab/blob/master/related_info/lab7/deadlock/bankers-homework.py)。大致输出可参考[参考输出](https://github.com/chyyuu/ucore_lab/blob/master/related_info/lab7/deadlock/example-output.txt)。除了`YOUR CODE`部分需要填写代码外，在算法的具体实现上，效率也不高，可进一步改进执行效率。
@@ -131,3 +131,98 @@
 2）每个测试中每个进程收发100000次（一收一发算一次）；
 
 3）分别测试数组长度为5个、50个和500个元素时的特征。
+
+## 问答题
+
+### 死锁与并发错误检测
+
+#### Q1：[基础] 为什么会出现死锁。
+
+A:
+
+#### Q2：[基础] 下图是否有死锁：
+
+![](figures/08-1-spoc-1.png)
+A:
+
+#### Q3：[基础] 什么是死锁预防，举例并分析。
+A:
+
+#### Q4：[基础] 描述银行家算法如何判断安全性。
+
+A:
+
+### 进程通信
+
+#### Q1：直接通信和间接通信的本质区别是什么？分别举一个例子。
+
+A:
+
+#### Q2：以下代码将如何运行？
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+int main()
+{
+    int fd[2];
+    int ret = pipe(fd);
+    if (ret == -1)
+    {
+        perror("pipe error\n");
+        return 1;
+    }
+    pid_t id = fork();
+    if (id == 0)  // child
+    {
+        int i = 0;
+        close(fd[0]);
+        char child[] = "I am child!";
+        while (i < 5)
+        {
+            write(fd[1], child, strlen(child) + 1);
+            sleep(2);
+            i++;
+        }
+    }
+    else if (id > 0)  //father
+    {
+        close(fd[1]);
+        char msg[100];
+        int j = 0;
+        while (j < 5)
+        {
+            memset(msg,'\0',sizeof(msg));
+            ssize_t s = read(fd[0], msg, sizeof(msg));
+            printf("%s\n", msg);
+            ++j;
+        }
+    }
+    else  //error
+    {
+        perror("fork error\n");
+        return 2;
+    }
+    return 0;
+}
+```
+
+A:
+
+#### Q3：操作系统把物理机器的硬件资源抽象出来，让用户进程运行在这些抽象的资源上。这样，用户进程可以认为自己 “独占” 一台逻辑上的计算机，而不是和其他进程共用一台机器的资源，从而可以大幅简化用户程序的编写。例如，通过页表机制，操作系统将物理地址空间抽象为逻辑（虚拟）地址空间；不同进程访问的同一个逻辑地址在物理上是不同的地址。通过文件系统机制，操作系统把磁盘抽象成一个一个的文件。通过处理器调度，CPU 被分时复用，可以认为是一个物理 CPU 变成了多个逻辑 CPU。按照这样的类比，本节课所讲的 “信号” 是对什么硬件资源的抽象？它能够帮助我们理解什么现象。你怎么看待这种想法？
+
+A:
+
+#### Q4：比较共享内存和管道各自的优缺点。
+
+A:
+
+#### Q5：Linux/Mac 下运行 ipcs 命令，这个命令是干啥的？
+
+A:
+
+#### Q6：比较管道和信息队列。
+
+A:
